@@ -11,6 +11,7 @@ if you are a student or anyone who wants my project please do take it but know t
     -import monkeypatch
     delete that line and the monkeypatch.py file if you want to run it in a pc or laptop.
 
+
 _______________________________________________________________________________________________________________________________
 *Screenshots*
 -------------
@@ -21,6 +22,7 @@ ________________________________________________________________________________
 ![Screenshot_20250901-003425 Chrome](https://github.com/user-attachments/assets/b46c18fd-3df5-474b-92d3-77a6d80b70ad)
 ![Screenshot_20250901-003436 Chrome](https://github.com/user-attachments/assets/2cb52319-8e76-44f5-aed5-e006b6400e09)
 ![Screenshot_20250901-003443 Chrome](https://github.com/user-attachments/assets/e0e0eb45-24a7-4e97-8c1d-6b1bb9ac2617)
+
 
 I added screenshots using best of my knowledge please adjust.
 
