@@ -11,6 +11,8 @@ if you are a student or anyone who wants my project please do take it but know t
     -import monkeypatch
     delete that line and the monkeypatch.py file if you want to run it in a pc or laptop.
 
+   //even after that you will get problems because i changed something in settings.py. so please be carefull
+
 
 _______________________________________________________________________________________________________________________________
 *Screenshots*
