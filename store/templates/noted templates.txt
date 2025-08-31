@@ -1,0 +1,160 @@
+cart.html
+
+{% extends "base.html" %}
+{% block title %}Cart - ShopX{% endblock %}
+{% block content %}
+<h1 class="mb-4 text-center">🛒 Your Neon Cart</h1>
+{% if cart_items %}
+<table class="table table-dark table-hover align-middle text-center">
+    <thead>
+        <tr class="text-neon">
+            <th>Product</th><th>Quantity</th><th>Price</th><th>Total</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.product.price }}</td>
+            <td>${{ item.total_price }}</td>
+            <td><a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <h3>Total: <span class="text-success">${{ cart_total }}</span></h3>
+    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">🚀 Proceed to Checkout</a>
+</div>
+{% else %}
+<p class="text-center">🚫 Your neon cart is empty.</p>
+{% endif %}
+{% endblock %}
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    
+@login_required
+def checkout(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    if not cart.items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect("cart")
+
+    order = Order.objects.create(user=request.user, total=cart.total_price())
+    for item in cart.items.all():
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price,
+        )
+    cart.items.all().delete()
+    messages.success(request, "Order placed successfully!")
+    return redirect("order_history")
+    
+    
+views.py(checkout)
+
+@login_required
+def checkout(request):
+    cart = Cart.objects.get(user=request.user)
+    if cart.items.exists():
+        order = Order.objects.create(
+            user=request.user,
+            total_price=cart.total_price()  # <-- Save total at checkout
+        )
+        for item in cart.items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+        cart.items.all().delete()
+        return redirect("order_history")
+    return redirect("cart")
+
+
+forms.py 
+  class ProfileUpdateForm(forms.ModelForm):
+    
+    password1 = forms.CharField(
+        label="New Password", widget=forms.PasswordInput, required=False
+    )
+    password2 = forms.CharField(
+        label="Confirm Password", widget=forms.PasswordInput, required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "email"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 or password2:
+            if password1 != password2:
+                raise forms.ValidationError("Passwords do not match")
+        return cleaned_data
+        
+        
+  home.html 
+  
+{% extends "base.html" %}
+{% block title %}Home - ShopX{% endblock %}
+{% block content %}
+<h1 class="mb-4">Featured Products ⚡</h1>
+<div class="row">
+  <!-- 
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">${{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm">View</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No products available in the neon market.</p>
+    {% endfor %}
+    -->
+    <br>
+    
+    <p class="text-neon-sub">Choose a category and start shopping</p>
+
+  <div class="row justify-content-center mt-4">
+    {% for category in categories %}
+      <div class="col-md-3 mb-4">
+        <div class="card cyber-card">
+          <div class="card-body">
+            <h5 class="card-title neon-text">{{ category.name }}</h5>
+            <a href="{% url 'category_products' category.id %}" class="btn cyber-btn">
+              View Products
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No categories available.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+

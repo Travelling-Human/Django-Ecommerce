@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Profile - ShopX{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 neon-box p-4 rounded">
+        
+        <!-- Display messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert 
+                    {% if message.tags == 'success' %}alert-success
+                    {% elif message.tags == 'error' %}alert-danger
+                    {% else %}alert-info
+                    {% endif %}
+                    text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+      
+        <h2 class="mb-4 text-center"> Your Profile</h2>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark text-light">
+                <strong>Username:</strong> {{ user.username }}
+            </li>
+            <li class="list-group-item bg-dark text-light">
+                <strong>Email:</strong> {{ user.email }}
+            </li>
+        </ul>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'profile_edit' %}" class="btn btn-primary me-2">Edit Profile</a>
+            <a href="{% url 'order_history' %}" class="btn btn-primary me-2">View Order History</a>
+        </div>
+
+        <!-- Show last 3 orders -->
+        {% if orders %}
+            <hr class="my-4 neon-divider">
+            <h4 class="text-center text-white"> Recent Orders</h4>
+            <ul class="list-group">
+                {% for order in orders|slice:":3" %}
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Order #{{ order.id }}</strong> - {{ order.created_at|date:"M d, Y H:i" }}  
+                        <span class="badge bg-info text-dark">{{ order.status }}</span>
+                        <div>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-neon mt-2">🔍 View</a>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item bg-dark text-light">No orders yet.</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

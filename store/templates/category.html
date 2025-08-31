@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .cyber-btn {
+    border: 2px solid #fcee09;
+    transition: 0.3s;
+  }
+  .cyber-btn:hover {
+    background-color: #fcee09;
+    color: #000 !important;
+    box-shadow: 0 0 15px #fcee09, 0 0 30px #fcee09;
+  }
+  .cyber-btn-secondary {
+    border: 2px solid #fcee09;
+    transition: 0.3s;
+  }
+  .cyber-btn-secondary:hover {
+    background-color: #fcee09;
+    color: #000 !important;
+    box-shadow: 0 0 15px #fcee09, 0 0 30px #fcee09;
+  }
+</style>
+
+<div class="container mt-5">
+  <!-- Category Title -->
+  <h2 class="neon-text">{{ category.name }}</h2>
+  <p class="text-neon-sub">Browse through New Age Fashion</p>
+
+  <!-- Subcategories Section -->
+  {% if category.subcategories.all %}
+    <div class="mb-4">
+      <div class="d-flex flex-wrap">
+        {% for sub in category.subcategories.all %}
+          <a href="{% url 'category_products' sub.id %}" 
+             class="btn cyber-btn text-white m-2">
+            {{ sub.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Products Grid -->
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-4 mb-4">
+        <div class="card cyber-card h-100">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title neon-text">{{ product.name }}</h5>
+            <p class="card-text neon-text">₹{{ product.price }}</p>
+            <div class="mt-auto">
+              <a href="{% url 'product_detail' product.id %}" class="btn cyber-btn text-white w-100 mb-2">Details</a>
+              <a href="{% url 'add_to_cart' product.id %}" class="btn cyber-btn-secondary text-white w-100">Add to Cart</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No products in this category.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
